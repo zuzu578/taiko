@@ -2,7 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.mybootapp.mybootapp.dao">
+<mapper namespace="com.taiko.taikoproject.taikoDao">
 
-	
+	<insert id ="startCrawling" parameterType="hashMap">
+        INSERT INTO taiko_songlist 
+		(
+				song_name,
+				song_genre,
+				difficulty
+		) 
+		VALUES 
+		(
+				#{songs},
+                #{songGenre},
+                #{difficulty}
+		)
+        </insert>
 </mapper>

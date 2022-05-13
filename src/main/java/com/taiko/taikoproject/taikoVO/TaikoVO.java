@@ -1,19 +1,11 @@
-package com.taiko.taikoproject.entity;
+package com.taiko.taikoproject.taikoVO;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
-@Entity(name = "taiko_songlist") // table name
-public class TaikoSongListEntity {
+public class TaikoVO {
     private int songNo;
     private String songName;
     private String songGenre;
     private String difficulty;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int getSongNo() {
         return songNo;
     }

@@ -9,21 +9,29 @@ import java.util.Optional;
 
 import com.taiko.taikoproject.entity.TaikoSongListEntity;
 import com.taiko.taikoproject.repository.TaikoSongListRepository;
+import com.taiko.taikoproject.taikoDao.TaikoDao;
 
+import org.apache.ibatis.session.SqlSession;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class TaikoCrawller {
 
     @Autowired
-    TaikoSongListRepository taiko;
+    private SqlSession sqlSession;
+    protected static final String NAMESPACE = "com.taiko.taikoproject.taikoDao.";
 
     Optional<TaikoSongListEntity> entity;
 
-    public void startCrawling() throws IOException {
+    public List<HashMap<String, Object>> startCrawling() throws IOException {
+
+        List<HashMap<String, Object>> list = new ArrayList<>();
+
         TaikoTrimUtils trimUtils = new TaikoTrimUtils();
 
         HashMap<String, Object> paramMap = new HashMap<String, Object>();
@@ -46,14 +54,19 @@ public class TaikoCrawller {
                 for (int j = 2; j < cellList.size(); j++) {
 
                     paramMap.put("songList", cellList.get(j).text());
-                    resultParams.put("songList", trimUtils.utils(paramMap));
+                    HashMap<String, Object> result = trimUtils.utils(paramMap);
+
+                    resultParams.put("difficulty", result.get("difficulty"));
+                    resultParams.put("songs", result.get("songs"));
                     resultParams.put("songGenre", songGenre.text());
-                    System.out.println(resultParams.get("songList") + "" + resultParams.get("songGenre"));
+                    list.add(resultParams);
+                    sqlSession.insert("com.taiko.taikoproject.taikoDao." + "startCrawling", resultParams);
 
                 }
             }
 
         }
+        return list;
 
     }
 
