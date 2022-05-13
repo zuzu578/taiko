@@ -42,7 +42,7 @@ public class TaikoSongController {
     @GetMapping("/songList")
     public List<TaikoSongListEntity> getSongList(HttpServletRequest req, String songGenre) {
         songGenre = req.getParameter("songGenre");
-        System.out.println("songGenre" + songGenre);
+        System.out.println("songGenre====================>" + songGenre);
         List<TaikoSongListEntity> songList = taiko.findBysongGenre(songGenre);
 
         return songList;
