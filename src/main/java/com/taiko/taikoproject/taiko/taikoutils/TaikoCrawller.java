@@ -13,6 +13,7 @@ import org.jsoup.select.Elements;
 
 public class TaikoCrawller {
     public void startCrawling() throws IOException {
+        TaikoTrimUtils trimUtils = new TaikoTrimUtils();
 
         HashMap<String, Object> paramMap = new HashMap<String, Object>();
 
@@ -35,8 +36,9 @@ public class TaikoCrawller {
                     // paramMap.put("songGenre", songGenre.text());
                     paramMap.put("songList", cellList.get(j).text());
 
-                    // HashMap<String, Object> resultParams = trimUtil.utils(paramMap);
-                    // resultParams.put("songGenre", songGenre.text());
+                    HashMap<String, Object> resultParams = trimUtils.utils(paramMap);
+
+                    resultParams.put("songGenre", songGenre.text());
 
                     // db.insert(resultParams);
 
