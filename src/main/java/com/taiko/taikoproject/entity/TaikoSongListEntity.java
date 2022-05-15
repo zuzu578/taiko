@@ -7,13 +7,13 @@ import javax.persistence.Id;
 
 @Entity(name = "taiko_songlist") // table name
 public class TaikoSongListEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int songNo;
     private String songName;
     private String songGenre;
     private String difficulty;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int getSongNo() {
         return songNo;
     }
