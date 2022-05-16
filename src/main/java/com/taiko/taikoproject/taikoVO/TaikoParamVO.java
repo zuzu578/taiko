@@ -4,7 +4,7 @@ public class TaikoParamVO {
     private String userName;
     private String userProfile;
     private String contents;
-    private int fileNo;
+    private String fileNo;
     private String filePath;
     private String fileName;
 
@@ -32,11 +32,11 @@ public class TaikoParamVO {
         this.contents = contents;
     }
 
-    public int getFileNo() {
+    public String getFileNo() {
         return fileNo;
     }
 
-    public void setFileNo(int fileNo) {
+    public void setFileNo(String fileNo) {
         this.fileNo = fileNo;
     }
 

@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
@@ -56,8 +57,8 @@ public class TaikoBoardController {
 
         // Page<TaikoBoardEntity> result =
         // taikoBoard.findAll(Sort.by(Sort.Direction.DESC, "createdTime"));
-        Page<TaikoBoardEntity> result = taikoBoard.findAll(pageable);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        Pageable result = PageRequest.of(0, 10, Sort.by("createdTime").descending());
+        return new ResponseEntity<>(taikoBoard.findAll(result), HttpStatus.OK);
 
     }
 
@@ -77,12 +78,14 @@ public class TaikoBoardController {
 
         if (file == null || file.isEmpty()) {
 
-            paramMap.put("fileName", "");
-            paramMap.put("filePath", "");
-            paramMap.get("id");
+            // paramMap.put("fileName", "");
+            // paramMap.put("filePath", "");
+            // paramMap.get("id");
 
-            sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadFile", paramMap);
+            // sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadFile",
+            // paramMap);
             // param.setFileNo('"');
+            param.setFileNo(null);
             sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadPost", param);
             return new ResponseEntity<>(HttpStatus.OK);
         }
@@ -101,7 +104,7 @@ public class TaikoBoardController {
                 paramMap.put("filePath", "/src/assets/");
 
                 sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadFile", paramMap);
-                param.setFileNo(Integer.parseInt(paramMap.get("id").toString()));
+                param.setFileNo(paramMap.get("id").toString());
                 sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadPost", param);
 
             }
