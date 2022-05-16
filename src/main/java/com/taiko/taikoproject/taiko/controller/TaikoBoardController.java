@@ -14,23 +14,25 @@ import com.taiko.taikoproject.entity.TaikoBoardCommentListEntity;
 import com.taiko.taikoproject.entity.TaikoBoardEntity;
 import com.taiko.taikoproject.repository.TaikoBoardCommentListRepository;
 import com.taiko.taikoproject.repository.TaikoBoardListRepository;
-import com.taiko.taikoproject.taikoDao.TaikoDao;
+
 import com.taiko.taikoproject.taikoVO.TaikoParamVO;
 
 import org.apache.ibatis.session.SqlSession;
-import org.jsoup.internal.StringUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -50,30 +52,40 @@ public class TaikoBoardController {
     Optional<TaikoBoardEntity> entity;
 
     @GetMapping("/board")
-    public List<TaikoBoardEntity> getBoardList() {
+    public ResponseEntity getBoardList(final Pageable pageable) {
 
-        List<TaikoBoardEntity> result = taikoBoard.findAll();
-
-        return result;
+        // Page<TaikoBoardEntity> result =
+        // taikoBoard.findAll(Sort.by(Sort.Direction.DESC, "createdTime"));
+        Page<TaikoBoardEntity> result = taikoBoard.findAll(pageable);
+        return new ResponseEntity<>(result, HttpStatus.OK);
 
     }
 
     @GetMapping("/boardComment")
-    public List<TaikoBoardCommentListEntity> getBoardComment(HttpServletRequest req) {
+    public ResponseEntity getBoardComment(HttpServletRequest req, final Pageable pageable) {
         String boardNo = req.getParameter("boardNo");
 
-        List<TaikoBoardCommentListEntity> result = comment.findCommentListByBoardNo(Integer.parseInt(boardNo));
-        return result;
-    }
-
-    @PostMapping("/")
-    public void insertBoard(@RequestBody TaikoBoardEntity board) {
-
+        Page<TaikoBoardCommentListEntity> result = (Page<TaikoBoardCommentListEntity>) comment.findCommentListByBoardNo(
+                Integer.parseInt(boardNo),
+                pageable);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping("/postBoard")
     public ResponseEntity<?> uploadFile(@ModelAttribute TaikoParamVO param, MultipartFile file) {
         HashMap<String, Object> paramMap = new HashMap<String, Object>();
+
+        if (file == null || file.isEmpty()) {
+
+            paramMap.put("fileName", "");
+            paramMap.put("filePath", "");
+            paramMap.get("id");
+
+            sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadFile", paramMap);
+            // param.setFileNo('"');
+            sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadPost", param);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
 
         try {
 
@@ -92,14 +104,6 @@ public class TaikoBoardController {
                 param.setFileNo(Integer.parseInt(paramMap.get("id").toString()));
                 sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadPost", param);
 
-            } else {
-                paramMap.put("fileName", "");
-                paramMap.put("filePath", "");
-                paramMap.get("id");
-
-                sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadFile", paramMap);
-                param.setFileNo(Integer.parseInt(paramMap.get("id").toString()));
-                sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadPost", param);
             }
 
         } catch (Exception e) {
