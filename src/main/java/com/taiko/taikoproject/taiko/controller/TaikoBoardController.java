@@ -18,9 +18,11 @@ import com.taiko.taikoproject.taikoDao.TaikoDao;
 import com.taiko.taikoproject.taikoVO.TaikoParamVO;
 
 import org.apache.ibatis.session.SqlSession;
+import org.jsoup.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -69,35 +71,40 @@ public class TaikoBoardController {
 
     }
 
-    @PostMapping("/uploadFile")
+    @PostMapping("/postBoard")
     public ResponseEntity<?> uploadFile(@ModelAttribute TaikoParamVO param, MultipartFile file) {
         HashMap<String, Object> paramMap = new HashMap<String, Object>();
 
         try {
 
-            String fileName = file.getOriginalFilename();
-            String filePath = Paths.get(FilePath, fileName).toString();
+            if (!file.isEmpty()) {
+                String fileName = file.getOriginalFilename();
+                String filePath = Paths.get(FilePath, fileName).toString();
 
-            if (fileName.equals("") || fileName == null) {
-                fileName = "";
-                filePath = "";
-                paramMap.put("fileName", fileName);
-                paramMap.put("filePath", filePath);
-                paramMap.get("id");
-                sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadFile", paramMap);
-            } else {
                 BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
                 stream.write(file.getBytes());
                 stream.close();
+
                 paramMap.put("fileName", fileName);
                 paramMap.put("filePath", "/src/assets/");
+
                 sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadFile", paramMap);
-                System.out.println("test!!!!!!" + paramMap.get("id"));
+                param.setFileNo(Integer.parseInt(paramMap.get("id").toString()));
+                sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadPost", param);
+
+            } else {
+                paramMap.put("fileName", "");
+                paramMap.put("filePath", "");
                 paramMap.get("id");
+
+                sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadFile", paramMap);
+                param.setFileNo(Integer.parseInt(paramMap.get("id").toString()));
+                sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadPost", param);
             }
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
         }
 
         return new ResponseEntity<>(HttpStatus.OK);

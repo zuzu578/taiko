@@ -35,4 +35,23 @@
         		SELECT LAST_INSERT_ID()
     		</selectKey>   
 		</insert>
+
+		<insert id ="uploadPost" parameterType="com.taiko.taikoproject.taikoVO.TaikoParamVO">
+			INSERT INTO taiko_board 
+			(
+				user_name,
+				user_profile,
+				contents,
+				file_no,
+				created_time
+			)
+			VALUES
+			(
+				#{userName},
+				#{userProfile},
+				#{contents},
+				#{fileNo},
+				NOW()
+			)
+		</insert>
 </mapper>
