@@ -18,4 +18,21 @@
                 #{difficulty}
 		)
         </insert>
+
+		<insert id ="uploadFile" parameterType="hashMap">
+			INSERT INTO taiko_board_file
+			(
+				file_path ,
+				file_name
+			)
+			VALUES
+			(
+				#{filePath},
+				#{fileName}
+
+			)
+			<selectKey resultType="int" keyProperty="id" order="AFTER">
+        		SELECT LAST_INSERT_ID()
+    		</selectKey>   
+		</insert>
 </mapper>
