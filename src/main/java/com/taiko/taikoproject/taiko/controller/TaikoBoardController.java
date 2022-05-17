@@ -53,11 +53,14 @@ public class TaikoBoardController {
     Optional<TaikoBoardEntity> entity;
 
     @GetMapping("/board")
-    public ResponseEntity getBoardList(final Pageable pageable) {
+    public ResponseEntity getBoardList(HttpServletRequest req, final Pageable pageable) {
 
-        // Page<TaikoBoardEntity> result =
-        // taikoBoard.findAll(Sort.by(Sort.Direction.DESC, "createdTime"));
-        Pageable result = PageRequest.of(0, 10, Sort.by("createdTime").descending());
+        String pageNum = req.getParameter("pageNum");
+        if (pageNum == "" || pageNum == null) {
+            pageNum = "0";
+        }
+
+        Pageable result = PageRequest.of(Integer.parseInt(pageNum), 10, Sort.by("createdTime").descending());
         return new ResponseEntity<>(taikoBoard.findAll(result), HttpStatus.OK);
 
     }
