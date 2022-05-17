@@ -43,7 +43,8 @@
 				user_profile,
 				contents,
 				file_no,
-				created_time
+				created_time,
+				password
 			)
 			VALUES
 			(
@@ -51,7 +52,8 @@
 				#{userProfile},
 				#{contents},
 				#{fileNo},
-				NOW()
+				NOW(),
+				#{password}
 			)
 		</insert>
 </mapper>

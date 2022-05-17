@@ -4,6 +4,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -14,9 +16,11 @@ import com.taiko.taikoproject.entity.TaikoBoardCommentListEntity;
 import com.taiko.taikoproject.entity.TaikoBoardEntity;
 import com.taiko.taikoproject.repository.TaikoBoardCommentListRepository;
 import com.taiko.taikoproject.repository.TaikoBoardListRepository;
-
+import com.taiko.taikoproject.repository.TaikoCRUDRepository;
+import com.taiko.taikoproject.taikoVO.DeleteParam;
 import com.taiko.taikoproject.taikoVO.TaikoParamVO;
 
+import org.apache.catalina.connector.Response;
 import org.apache.ibatis.session.SqlSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +28,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.Page;
@@ -50,6 +56,9 @@ public class TaikoBoardController {
     @Autowired
     TaikoBoardCommentListRepository comment;
 
+    @Autowired
+    TaikoCRUDRepository crud;
+
     Optional<TaikoBoardEntity> entity;
 
     @GetMapping("/board")
@@ -65,6 +74,12 @@ public class TaikoBoardController {
 
     }
 
+    @DeleteMapping("/")
+    public ResponseEntity deleteBoard() {
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @GetMapping("/boardComment")
     public ResponseEntity getBoardComment(HttpServletRequest req, final Pageable pageable) {
         String boardNo = req.getParameter("boardNo");
@@ -76,18 +91,15 @@ public class TaikoBoardController {
     }
 
     @PostMapping("/postBoard")
-    public ResponseEntity<?> uploadFile(@ModelAttribute TaikoParamVO param, MultipartFile file) {
+    public ResponseEntity<?> uploadFile(@ModelAttribute TaikoParamVO param, MultipartFile file)
+            throws NoSuchAlgorithmException {
         HashMap<String, Object> paramMap = new HashMap<String, Object>();
+        PasswordCrypto cipher = new PasswordCrypto();
 
         if (file == null || file.isEmpty()) {
 
-            // paramMap.put("fileName", "");
-            // paramMap.put("filePath", "");
-            // paramMap.get("id");
-
-            // sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadFile",
-            // paramMap);
-            // param.setFileNo('"');
+            String cipherPassowrd = cipher.passwordCrypting(param.getPassword());
+            param.setPassword(cipherPassowrd);
             param.setFileNo(null);
             sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadPost", param);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -108,6 +120,9 @@ public class TaikoBoardController {
 
                 sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadFile", paramMap);
                 param.setFileNo(paramMap.get("id").toString());
+
+                String cipherPassowrd = cipher.passwordCrypting(param.getPassword());
+                param.setPassword(cipherPassowrd);
                 sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadPost", param);
 
             }
@@ -118,6 +133,35 @@ public class TaikoBoardController {
         }
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete")
+    public String checkUser(@RequestBody DeleteParam param) throws NoSuchAlgorithmException {
+        String result = "";
+        String password = param.getBoardNo();
+        int boardNo = Integer.parseInt(param.getBoardNo());
+        PasswordCrypto cipher = new PasswordCrypto();
+        password = cipher.passwordCrypting(password);
+        List<TaikoBoardListRepository> result2 = crud.findByBoardNo(boardNo);
+        result2.forEach(item -> System.out.println("item" + item));
+
+        SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        try {
+            entity = crud.findByBoardNoAndPassword(boardNo, password);
+            entity.ifPresent(item -> {
+                String format_time2 = format2.format(System.currentTimeMillis());
+                item.setDeletedTime(format_time2);
+                taikoBoard.save(item);
+            });
+            result = "success";
+        } catch (Exception error) {
+            result = "fail";
+            error.printStackTrace();
+        }
+
+        return result;
+
     }
 
 }

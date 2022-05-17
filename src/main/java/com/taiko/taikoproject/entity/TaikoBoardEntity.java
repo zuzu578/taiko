@@ -22,6 +22,15 @@ public class TaikoBoardEntity {
     private String fileNo;
     private String createdTime;
     private String deletedTime;
+    private String password;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     @ManyToOne
     @JoinColumn(name = "fileNo", insertable = false, updatable = false)
