@@ -21,7 +21,7 @@ public class TaikoBoardCommentListEntity {
     private String createdTime;
     private String deletedTime;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "fileNo", insertable = false, updatable = false)
     private TaikoBoardFileEntity file;
 

@@ -56,4 +56,48 @@
 				#{password}
 			)
 		</insert>
+
+		<insert id="uploadComments" parameterType="com.taiko.taikoproject.taikoVO.WriteCommentParam">
+			INSERT INTO taiko_board_reply
+			(
+				board_no,
+				user_name,
+				user_profile,
+				contents,
+				file_no,
+				created_time,
+				password
+			)
+			VALUES
+			(
+				#{boardNo},
+				#{userName},
+				#{userProfile},
+				#{comments},
+				#{fileNo},
+				NOW(),
+				#{password}
+			)
+		</insert>
+
+		<select id="selectComments" resultType="com.taiko.taikoproject.taikoVO.TaikoBoardCommentsVO">
+
+			select 
+			t1.reply_no as replyNo,
+			t1.board_no as boardNo,
+			t1.user_name as userName,
+			t1.user_profile as userProfile,
+			t1.contents as contents,
+			t1.created_time as createdTime,
+			t2.file_no as fileNo,
+			t2.file_path as filePath,
+			t2.file_name as fileName
+			from 
+			taiko_board_reply t1 
+			left outer join taiko_board_file t2  
+			on t1.file_no  = t2.file_no 
+			where t1.board_no = '${boardNo}'
+
+
+		</select>
 </mapper>

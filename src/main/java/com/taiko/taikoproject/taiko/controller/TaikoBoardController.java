@@ -19,7 +19,9 @@ import com.taiko.taikoproject.repository.TaikoBoardCommentListRepository;
 import com.taiko.taikoproject.repository.TaikoBoardListRepository;
 import com.taiko.taikoproject.repository.TaikoCRUDRepository;
 import com.taiko.taikoproject.taikoVO.DeleteParam;
+import com.taiko.taikoproject.taikoVO.TaikoBoardCommentsVO;
 import com.taiko.taikoproject.taikoVO.TaikoParamVO;
+import com.taiko.taikoproject.taikoVO.WriteCommentParam;
 
 import org.apache.catalina.connector.Response;
 import org.apache.ibatis.session.SqlSession;
@@ -75,14 +77,29 @@ public class TaikoBoardController {
 
     }
 
+    @GetMapping("/boardDetail")
+    public ResponseEntity getBoardDetail(HttpServletRequest req) {
+        String boardNo = req.getParameter("boardNo");
+        return new ResponseEntity<>(taikoBoard.findByboardNo(Integer.parseInt(boardNo)), HttpStatus.OK);
+    }
+
     @GetMapping("/boardComment")
     public ResponseEntity getBoardComment(HttpServletRequest req, final Pageable pageable) {
-        String boardNo = req.getParameter("boardNo");
 
-        Page<TaikoBoardCommentListEntity> result = (Page<TaikoBoardCommentListEntity>) comment.findCommentListByBoardNo(
-                Integer.parseInt(boardNo),
-                pageable);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        HashMap<String, Object> paramMap = new HashMap<String, Object>();
+
+        String pageNum = req.getParameter("pageNum");
+        String boardNo = req.getParameter("boardNo");
+        if (pageNum == "" || pageNum == null) {
+            pageNum = "0";
+        }
+
+        paramMap.put("boardNo", boardNo);
+        paramMap.put("pageNum", pageNum);
+
+        List<TaikoBoardCommentsVO> comments = sqlSession
+                .selectList("com.taiko.taikoproject.taikoDao." + "selectComments", paramMap);
+        return new ResponseEntity<>(comments, HttpStatus.OK);
     }
 
     @PostMapping("/postBoard")
@@ -142,21 +159,74 @@ public class TaikoBoardController {
         entity = taikoBoard.findByboardNoAndPassword(boardNo, password);
 
         try {
+            if (entity.isPresent()) {
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String format_time2 = format.format(System.currentTimeMillis());
 
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String format_time2 = format.format(System.currentTimeMillis());
+                entity.ifPresent(item -> {
+                    item.setDeletedTime(format_time2);
+                    taikoBoard.save(item);
+                });
+                result = "success";
+                return result;
 
-            entity.ifPresent(item -> {
-                item.setDeletedTime(format_time2);
-                taikoBoard.save(item);
-            });
-            result = "success";
-            return result;
+            } else {
+                result = "fail";
+                return result;
+            }
         } catch (Exception error) {
             result = "fail";
             error.printStackTrace();
             return result;
         }
+
+    }
+
+    @PostMapping("/comments")
+    public ResponseEntity<?> writeComments(@ModelAttribute WriteCommentParam param, MultipartFile file)
+            throws NoSuchAlgorithmException {
+        HashMap<String, Object> paramMap = new HashMap<String, Object>();
+        PasswordCrypto cipher = new PasswordCrypto();
+
+        if (file == null || file.isEmpty()) {
+
+            String cipherPassowrd = cipher.passwordCrypting(param.getPassword());
+            System.out.println("boardNo=======================>" + param.getBoardNo());
+            param.setPassword(cipherPassowrd);
+            param.setFileNo(null);
+
+            sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadComments", param);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+
+        try {
+
+            if (!file.isEmpty()) {
+                String fileName = file.getOriginalFilename();
+                String filePath = Paths.get(FilePath, fileName).toString();
+
+                BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
+                stream.write(file.getBytes());
+                stream.close();
+
+                paramMap.put("fileName", fileName);
+                paramMap.put("filePath", "/src/assets/");
+
+                sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadFile", paramMap);
+                param.setFileNo(paramMap.get("id").toString());
+
+                String cipherPassowrd = cipher.passwordCrypting(param.getPassword());
+                param.setPassword(cipherPassowrd);
+                sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadComments", param);
+
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
 
     }
 

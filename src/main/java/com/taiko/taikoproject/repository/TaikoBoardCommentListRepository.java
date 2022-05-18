@@ -11,4 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TaikoBoardCommentListRepository extends JpaRepository<TaikoBoardCommentListEntity, Long> {
     List<TaikoBoardCommentListEntity> findCommentListByBoardNo(int boardNo, final Pageable pageable);
+
+    List<TaikoBoardCommentListEntity> findByboardNoAndDeletedTimeNull(Pageable result, int boardNo);
+
 }
