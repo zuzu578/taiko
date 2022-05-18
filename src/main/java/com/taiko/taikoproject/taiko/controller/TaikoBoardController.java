@@ -70,7 +70,7 @@ public class TaikoBoardController {
             pageNum = "0";
         }
 
-        Pageable result = PageRequest.of(Integer.parseInt(pageNum), 10, Sort.by("createdTime").descending());
+        Pageable result = PageRequest.of(Integer.parseInt(pageNum), 5, Sort.by("createdTime").descending());
         return new ResponseEntity<>(taikoBoard.findBydeletedTimeNull(result), HttpStatus.OK);
 
     }
