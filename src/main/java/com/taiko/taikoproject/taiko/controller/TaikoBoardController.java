@@ -71,14 +71,8 @@ public class TaikoBoardController {
         }
 
         Pageable result = PageRequest.of(Integer.parseInt(pageNum), 10, Sort.by("createdTime").descending());
-        return new ResponseEntity<>(taikoBoard.findAll(result), HttpStatus.OK);
+        return new ResponseEntity<>(taikoBoard.findBydeletedTimeNull(result), HttpStatus.OK);
 
-    }
-
-    @DeleteMapping("/")
-    public ResponseEntity deleteBoard() {
-
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/boardComment")
@@ -100,6 +94,7 @@ public class TaikoBoardController {
         if (file == null || file.isEmpty()) {
 
             String cipherPassowrd = cipher.passwordCrypting(param.getPassword());
+            System.out.println("cipherPassword ========>" + cipherPassowrd);
             param.setPassword(cipherPassowrd);
             param.setFileNo(null);
             sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadPost", param);
@@ -139,10 +134,11 @@ public class TaikoBoardController {
     @DeleteMapping("/delete")
     public String checkUser(@RequestBody DeleteParam param) throws NoSuchAlgorithmException {
         String result = "";
-        String password = param.getBoardNo();
+        String password = param.getPassword();
         int boardNo = Integer.parseInt(param.getBoardNo());
         PasswordCrypto cipher = new PasswordCrypto();
         password = cipher.passwordCrypting(password);
+        System.out.println("password =========>" + password);
         entity = taikoBoard.findByboardNoAndPassword(boardNo, password);
 
         try {

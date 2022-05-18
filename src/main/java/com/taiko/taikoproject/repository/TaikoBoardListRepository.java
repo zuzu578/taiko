@@ -13,4 +13,6 @@ public interface TaikoBoardListRepository extends JpaRepository<TaikoBoardEntity
 
     Optional<TaikoBoardEntity> findByboardNoAndPassword(int boardNo, String password);
 
+    List<TaikoBoardEntity> findBydeletedTimeNull(Pageable result);
+
 }
