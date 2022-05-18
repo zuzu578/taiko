@@ -11,6 +11,6 @@ public interface TaikoCRUDRepository extends JpaRepository<TaikoBoardEntity, Lon
 
     Optional<TaikoBoardEntity> findByBoardNoAndPassword(int boardNo, String password);
 
-    List<TaikoBoardListRepository> findByBoardNo(int boardNo);
+    List<TaikoBoardListRepository> findByboardNo(int boardNo);
 
 }

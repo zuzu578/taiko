@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.taiko.taikoproject.entity.TaikoBoardCommentListEntity;
 import com.taiko.taikoproject.entity.TaikoBoardEntity;
+import com.taiko.taikoproject.entity.TaikoSongListEntity;
 import com.taiko.taikoproject.repository.TaikoBoardCommentListRepository;
 import com.taiko.taikoproject.repository.TaikoBoardListRepository;
 import com.taiko.taikoproject.repository.TaikoCRUDRepository;
@@ -142,25 +143,24 @@ public class TaikoBoardController {
         int boardNo = Integer.parseInt(param.getBoardNo());
         PasswordCrypto cipher = new PasswordCrypto();
         password = cipher.passwordCrypting(password);
-        List<TaikoBoardListRepository> result2 = crud.findByBoardNo(boardNo);
-        result2.forEach(item -> System.out.println("item" + item));
-
-        SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        entity = taikoBoard.findByboardNoAndPassword(boardNo, password);
 
         try {
-            entity = crud.findByBoardNoAndPassword(boardNo, password);
+
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String format_time2 = format.format(System.currentTimeMillis());
+
             entity.ifPresent(item -> {
-                String format_time2 = format2.format(System.currentTimeMillis());
                 item.setDeletedTime(format_time2);
                 taikoBoard.save(item);
             });
             result = "success";
+            return result;
         } catch (Exception error) {
             result = "fail";
             error.printStackTrace();
+            return result;
         }
-
-        return result;
 
     }
 
