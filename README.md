@@ -14,3 +14,16 @@ select 는 mybatis , update , delete , insert 등은 하이버네이트 사용�
 @EntityScan(basePackages = { "com.taiko.taikoproject.entity" }) 
 
 을 추가해준다.
+
+
+# paging 처리 
+```java
+ Pageable result = PageRequest.of(Integer.parseInt(pageNum), 5, Sort.by("createdTime").descending());
+        return new ResponseEntity<>(taikoBoard.findBydeletedTimeNull(result), HttpStatus.OK);
+
+              
+ ```
+  Pageable 을 이용하여 페이지 계산  , 최근 날짜의 게시물을 가져오도록 정렬.
+  
+  
+
