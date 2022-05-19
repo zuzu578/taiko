@@ -15,12 +15,15 @@ import javax.servlet.http.HttpServletRequest;
 import com.taiko.taikoproject.entity.TaikoBoardCommentListEntity;
 import com.taiko.taikoproject.entity.TaikoBoardEntity;
 import com.taiko.taikoproject.entity.TaikoSongListEntity;
+import com.taiko.taikoproject.entity.TaikoTjaFileEntity;
 import com.taiko.taikoproject.repository.TaikoBoardCommentListRepository;
 import com.taiko.taikoproject.repository.TaikoBoardListRepository;
 import com.taiko.taikoproject.repository.TaikoCRUDRepository;
+import com.taiko.taikoproject.repository.TaikoTjaFileRepository;
 import com.taiko.taikoproject.taikoVO.DeleteParam;
 import com.taiko.taikoproject.taikoVO.TaikoBoardCommentsVO;
 import com.taiko.taikoproject.taikoVO.TaikoParamVO;
+import com.taiko.taikoproject.taikoVO.UploadTjaVO;
 import com.taiko.taikoproject.taikoVO.WriteCommentParam;
 
 import org.apache.catalina.connector.Response;
@@ -55,6 +58,9 @@ public class TaikoBoardController {
 
     @Autowired
     TaikoBoardListRepository taikoBoard;
+
+    @Autowired
+    TaikoTjaFileRepository tja;
 
     @Autowired
     TaikoBoardCommentListRepository comment;
@@ -180,6 +186,52 @@ public class TaikoBoardController {
             return result;
         }
 
+    }
+
+    @GetMapping("/selectTja")
+    public ResponseEntity<?> selectTja() {
+        return new ResponseEntity<>(tja.findAll(), HttpStatus.OK);
+    }
+
+    @PostMapping("/uploadTja")
+    public ResponseEntity<?> uploadTja(@ModelAttribute TaikoTjaFileEntity param, MultipartFile file)
+            throws NoSuchAlgorithmException {
+        PasswordCrypto cipher = new PasswordCrypto();
+
+        if (file == null || file.isEmpty()) {
+
+            String cipherPassowrd = cipher.passwordCrypting(param.getPassword());
+            System.out.println("cipherPassword ========>" + cipherPassowrd);
+            param.setPassword(cipherPassowrd);
+            // sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadPost", param);
+            tja.save(param);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+
+        try {
+            if (!file.isEmpty()) {
+                String fileName = file.getOriginalFilename();
+                String filePath = Paths.get(FilePath, fileName).toString();
+
+                BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
+                String cipherPassowrd = cipher.passwordCrypting(param.getPassword());
+                stream.write(file.getBytes());
+                stream.close();
+
+                param.setFileName(fileName);
+                param.setFilePath("/src/assets/");
+                param.setPassword(cipherPassowrd);
+
+                tja.save(param);
+
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/comments")
