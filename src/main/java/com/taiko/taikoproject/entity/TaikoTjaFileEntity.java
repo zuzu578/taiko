@@ -13,7 +13,7 @@ public class TaikoTjaFileEntity {
     private int fileNo;
     private String filePath;
     private String fileName;
-    private String comment;
+    private String comments;
     private String userName;
     private String password;
     private String createdTime;
@@ -43,12 +43,12 @@ public class TaikoTjaFileEntity {
         this.fileName = fileName;
     }
 
-    public String getComment() {
-        return comment;
+    public String getComments() {
+        return comments;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setComments(String comments) {
+        this.comments = comments;
     }
 
     public String getUserName() {
