@@ -202,8 +202,9 @@ public class TaikoBoardController {
     }
 
     @PostMapping("/uploadTja")
-    public ResponseEntity<?> uploadTja(@ModelAttribute TaikoTjaFileEntity param, MultipartFile file)
+    public String uploadTja(@ModelAttribute TaikoTjaFileEntity param, MultipartFile file)
             throws NoSuchAlgorithmException {
+        String result = "";
         PasswordCrypto cipher = new PasswordCrypto();
 
         if (file == null || file.isEmpty()) {
@@ -212,9 +213,10 @@ public class TaikoBoardController {
             System.out.println("cipherPassword ========>" + cipherPassowrd);
             param.setPassword(cipherPassowrd);
             tja.save(param);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
+            result = "success";
+            return result;
 
+        }
         try {
             if (!file.isEmpty()) {
                 String fileName = file.getOriginalFilename();
@@ -230,15 +232,16 @@ public class TaikoBoardController {
                 param.setPassword(cipherPassowrd);
 
                 tja.save(param);
+                result = "success";
+                return result;
 
             }
 
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-
+            result = "fail";
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return result;
     }
 
     @PostMapping("/comments")
