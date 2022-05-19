@@ -203,7 +203,6 @@ public class TaikoBoardController {
             String cipherPassowrd = cipher.passwordCrypting(param.getPassword());
             System.out.println("cipherPassword ========>" + cipherPassowrd);
             param.setPassword(cipherPassowrd);
-            // sqlSession.insert("com.taiko.taikoproject.taikoDao." + "uploadPost", param);
             tja.save(param);
             return new ResponseEntity<>(HttpStatus.OK);
         }
