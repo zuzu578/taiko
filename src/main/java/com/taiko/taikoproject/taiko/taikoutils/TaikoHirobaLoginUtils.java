@@ -12,6 +12,7 @@ import java.util.Map;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.CookieManager;
+import com.gargoylesoftware.htmlunit.ScriptResult;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.DomElement;
@@ -37,25 +38,43 @@ public class TaikoHirobaLoginUtils {
     public String login(String naverId, String naverPw) throws Exception {
 
         WebClient wc = new WebClient();
+        wc.getOptions().setThrowExceptionOnScriptError(false);
+        String url = "https://account.bandainamcoid.com/login.html?client_id=nbgi_taiko&customize_id=&redirect_uri=https%3A%2F%2Fwww.bandainamcoid.com%2Fv2%2Foauth2%2Fauth%3Fback%3Dv3%26client_id%3Dnbgi_taiko%26scope%3DJpGroupAll%26redirect_uri%3Dhttps%253A%252F%252Fdonderhiroba.jp%252Flogin_process.php%253Finvite_code%253D%2526abs_back_url%253D%2526location_code%253D%26text%3D&prompt=login";
 
-        String url = "https://account.bandainamcoid.com/login.html?client_id=idportal&customize_id=&redirect_uri=";
-        String redirect_uri = "https://www.bandainamcoid.com/v2/oauth2/auth?back=v3&client_id=&scope=&redirect_uri=&text=";
         try {
-            HtmlPage page = (HtmlPage) wc.getPage(url + redirect_uri);
-            page.getXmlEncoding();
-            HtmlInput id = (HtmlInput) page.getHtmlElementById("mail");
-            HtmlInput password = (HtmlInput) page.getHtmlElementById("pass");
-            id.setValueAttribute(naverId);
-            password.setValueAttribute(naverPw);
+            HtmlPage page = (HtmlPage) wc.getPage(url);
+            HtmlInput id = (HtmlInput) page.getElementByName("mail");
+            HtmlInput password = (HtmlInput) page.getElementByName("pass");
+            id.setValueAttribute("dlwnghks6821@naver.com");
+            password.setValueAttribute("lms3821su");
+            System.out.println("입력한 id =>" + id.getValueAttribute() + "입력한 pw =>" + password.getValueAttribute());
+            password.getValueAttribute();
             final List<?> divs = page.getByXPath("//div");
 
-            HtmlElement button = page.getFirstByXPath("//button[@class='btn _btn-size-50 _btn-yellow']");
-            button.click();
+            // HtmlElement button = page.getFirstByXPath("//button[@class='btn _btn-size-50
+            // _btn-gray']");
+            // button.click();
+
+            HtmlElement button2 = page.getFirstByXPath("//button[@class='btn _btn-size-50 _btn-gray']");
+            button2.removeAttribute("disabled");
+            button2.removeAllChildren();
+            button2.removeStyleAttribute("disabled");
+
+            button2.click();
+            Thread.sleep(100);
             System.out.println(page.asNormalizedText());
+            // System.out.println(page.getTextContent());
+
+            HtmlPage page2 = wc.getPage("https://donderhiroba.jp/login_select.php");
+            // System.out.println(page2.getTextContent());
+            // HtmlImageInput inputSubmit = (HtmlImageInput) page2
+            // .getFirstByXPath("//form[@class='buttonImage']");
+            // inputSubmit.click();
+
+            System.out.println(page2.asNormalizedText());
+
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            wc.close();
         }
         // return !currPage.asText().contains("Naver Sign in");
         return null;
