@@ -1,4 +1,4 @@
-package com.taiko.taikoproject.taiko.controller;
+package com.taiko.taikoproject.taiko.controller.TaikoBoard;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -20,6 +20,7 @@ import com.taiko.taikoproject.repository.TaikoBoardCommentListRepository;
 import com.taiko.taikoproject.repository.TaikoBoardListRepository;
 import com.taiko.taikoproject.repository.TaikoCRUDRepository;
 import com.taiko.taikoproject.repository.TaikoTjaFileRepository;
+import com.taiko.taikoproject.taiko.controller.PasswordCrypto;
 import com.taiko.taikoproject.taikoVO.DeleteParam;
 import com.taiko.taikoproject.taikoVO.TaikoBoardCommentsVO;
 import com.taiko.taikoproject.taikoVO.TaikoParamVO;

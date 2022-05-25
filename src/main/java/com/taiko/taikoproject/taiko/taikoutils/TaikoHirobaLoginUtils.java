@@ -14,20 +14,18 @@ import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 import com.gargoylesoftware.htmlunit.protocol.data.DataUrlDecoder;
-import com.taiko.taikoproject.taiko.controller.DonderHirobaLogin;
+import com.taiko.taikoproject.taiko.controller.DonderHiroba.DonderHirobaLogin;
 import com.taiko.taikoproject.taikoVO.DonderHirobaLoginParam;
 
 public class TaikoHirobaLoginUtils {
-    static DataUrlDecoder s;
 
     public HashMap<String, Object> login(DonderHirobaLoginParam loginvo) throws Exception {
         HashMap<String, Object> resultMap = new HashMap<String, Object>();
         WebClient wc = new WebClient();
         String template = "";
 
-        wc.getOptions().setThrowExceptionOnScriptError(false);
         String url = "https://account.bandainamcoid.com/login.html?client_id=nbgi_taiko&customize_id=&redirect_uri=https%3A%2F%2Fwww.bandainamcoid.com%2Fv2%2Foauth2%2Fauth%3Fback%3Dv3%26client_id%3Dnbgi_taiko%26scope%3DJpGroupAll%26redirect_uri%3Dhttps%253A%252F%252Fdonderhiroba.jp%252Flogin_process.php%253Finvite_code%253D%2526abs_back_url%253D%2526location_code%253D%26text%3D&prompt=login";
-
+        wc.getOptions().setThrowExceptionOnScriptError(false);
         try {
             HtmlPage page = (HtmlPage) wc.getPage(url);
             HtmlInput id = (HtmlInput) page.getElementByName("mail");
@@ -49,7 +47,7 @@ public class TaikoHirobaLoginUtils {
             HtmlPage page2 = wc.getPage("https://donderhiroba.jp/login_select.php");
             System.out.println(page2.asNormalizedText());
 
-            Thread.sleep(2500);
+            Thread.sleep(3000);
             HtmlAnchor button3 = page2.getAnchorByHref("javascript:void(0)");
             button3.click();
             // 유저 정보 페이지
@@ -70,7 +68,7 @@ public class TaikoHirobaLoginUtils {
             resultMap.put("template", page3.asXml());
         } catch (Exception e) {
             e.printStackTrace();
-            resultMap.put("message", "아이디 혹은 비밀번호를 확인해주세요.");
+            resultMap.put("message", "서버와 통신하는데 시간이 오래걸리고있습니다.");
 
         }
         return resultMap;
