@@ -14,12 +14,14 @@ import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 import com.gargoylesoftware.htmlunit.protocol.data.DataUrlDecoder;
+import com.taiko.taikoproject.taiko.controller.DonderHirobaLogin;
+import com.taiko.taikoproject.taikoVO.DonderHirobaLoginParam;
 
 public class TaikoHirobaLoginUtils {
     static DataUrlDecoder s;
 
-    public String login(String naverId, String naverPw) throws Exception {
-        // HashMap<String, Object> userInfo = new HashMap<String, Object>();
+    public HashMap<String, Object> login(DonderHirobaLoginParam loginvo) throws Exception {
+        HashMap<String, Object> resultMap = new HashMap<String, Object>();
         WebClient wc = new WebClient();
         String template = "";
 
@@ -30,8 +32,8 @@ public class TaikoHirobaLoginUtils {
             HtmlPage page = (HtmlPage) wc.getPage(url);
             HtmlInput id = (HtmlInput) page.getElementByName("mail");
             HtmlInput password = (HtmlInput) page.getElementByName("pass");
-            id.setValueAttribute("dlwnghks6821@naver.com");
-            password.setValueAttribute("lms3821su");
+            id.setValueAttribute(loginvo.getUserId());
+            password.setValueAttribute(loginvo.getUserPassowrd());
             System.out.println("입력한 id =>" + id.getValueAttribute() + "입력한 pw =>" + password.getValueAttribute());
             password.getValueAttribute();
 
@@ -42,12 +44,12 @@ public class TaikoHirobaLoginUtils {
 
             button2.click();
             // 필수!
-            Thread.sleep(5000);
+            Thread.sleep(4000);
 
             HtmlPage page2 = wc.getPage("https://donderhiroba.jp/login_select.php");
             System.out.println(page2.asNormalizedText());
 
-            Thread.sleep(3000);
+            Thread.sleep(2500);
             HtmlAnchor button3 = page2.getAnchorByHref("javascript:void(0)");
             button3.click();
             // 유저 정보 페이지
@@ -64,11 +66,13 @@ public class TaikoHirobaLoginUtils {
             // for (int i = 0; i < myDongInfo.size(); i++) {
             // System.out.println(myDongInfo.get(i));
             // }
-            template = page3.asXml();
 
+            resultMap.put("template", page3.asXml());
         } catch (Exception e) {
             e.printStackTrace();
+            resultMap.put("message", "아이디 혹은 비밀번호를 확인해주세요.");
+
         }
-        return template;
+        return resultMap;
     }
 }
