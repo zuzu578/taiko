@@ -38,11 +38,10 @@ public class TaikoHirobaLoginUtils {
 
         WebClient wc = new WebClient();
 
-        String url = "https://account.bandainamcoid.com/login.html?client_id=idportal&customize_id=&redirect_uri=https%3A%2F%2Fwww.bandainamcoid.com%2Fv2%2Foauth2%2Fauth%3Fback%3Dv3%26client_id%3D%26scope%3D%26redirect_uri%3D%26text%3D";
-        url = URLDecoder.decode(url);
-        System.out.println("url:" + url);
+        String url = "https://account.bandainamcoid.com/login.html?client_id=idportal&customize_id=&redirect_uri=";
+        String redirect_uri = "https://www.bandainamcoid.com/v2/oauth2/auth?back=v3&client_id=&scope=&redirect_uri=&text=";
         try {
-            HtmlPage page = (HtmlPage) wc.getPage(url);
+            HtmlPage page = (HtmlPage) wc.getPage(url + redirect_uri);
             page.getXmlEncoding();
             HtmlInput id = (HtmlInput) page.getHtmlElementById("mail");
             HtmlInput password = (HtmlInput) page.getHtmlElementById("pass");
