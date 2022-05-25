@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class DonderHirobaLogin {
 
     @GetMapping("/login")
-    public String login() {
+    public String login() throws Exception {
         TaikoHirobaLoginUtils login = new TaikoHirobaLoginUtils();
         try {
-            login.hirobaLogin();
+            login.login("dlwnghks6821", "lms3821su12");
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,44 +1,55 @@
 package com.taiko.taikoproject.taiko.taikoutils;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.CookieManager;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlButton;
+import com.gargoylesoftware.htmlunit.html.HtmlDivision;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlImageInput;
+import com.gargoylesoftware.htmlunit.html.HtmlInput;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
+import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
+import com.gargoylesoftware.htmlunit.util.Cookie;
 
 public class TaikoHirobaLoginUtils {
 
-    private String id = "dlwnghks6821@naver.com";
-    private String password = "lms3821su";
+    public static Map cookies;
+    private static final String URL_LOGIN = "https://nid.naver.com/nidlogin.login?mode=form&url=https%3A%2F%2Fwww.naver.com";
 
-    public String hirobaLogin() throws IOException {
-        Jsoup.connect("https://donderhiroba.jp/login.php").get();
-        Connection.Response loginPageResponse = Jsoup.connect("https://donderhiroba.jp/login.php")
-                .timeout(3000)
-                .header("Origin", "http://test.co.kr")
-                .header("Referer", "https://donderhiroba.jp/login.php")
-                .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .header("Accept-Encoding", "gzip, deflate, br")
-                .header("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4")
-                .method(Connection.Method.GET)
-                .execute();
+    private boolean isLogin;
+    private WebClient webClient;
+    private HtmlPage currPage;
 
-        Map<String, String> cookies = loginPageResponse.cookies();
-        Connection response = (Connection) Jsoup.connect("https://donderhiroba.jp/login.php")
-                .data("member_id", id, "member_password", password)
-                .userAgent(
-                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36")
-                .cookie("PHPSESSID", loginPageResponse.cookies().get("PHPSESSID"))
-                .method(Connection.Method.POST)
-                .timeout(5000)
-                .execute();
+    public String login(String naverId, String naverPw) throws Exception {
+        WebClient webClient = new WebClient();
+        try {
+            HtmlPage page = (HtmlPage) webClient
+                    .getPage("https://nid.naver.com/nidlogin.login?url=https%3A%2F%2Fmail.naver.com%2F");
+            HtmlForm form = page.getFormByName("frmNIDLogin");
+            form.getInputByName("id").setValueAttribute(naverId); // works fine
+            form.getInputByName("pw").setValueAttribute(naverPw); // does not work
+            final List<?> divs = page.getByXPath("//div");
+            // divs.get(25);
+            // divs.get(25)
+            // get div which has a 'name' attribute of 'John'
 
-        // Document doc =
-        // Jsoup.connect("http://www.test.co.kr/product/product_detail.htm?ProductNo=test")
-        // .cookies(response.cookies()).get();
-
+            HtmlDivision div = (HtmlDivision) page.getByXPath("//button[@type='submit']/button").get(0);
+            div.click();
+            System.out.println(page.asNormalizedText());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            webClient.close();
+        }
+        // return !currPage.asText().contains("Naver Sign in");
         return null;
     }
 }
