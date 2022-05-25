@@ -14,7 +14,7 @@ public class DonderHirobaLogin {
     public String login() throws Exception {
         TaikoHirobaLoginUtils login = new TaikoHirobaLoginUtils();
         try {
-            login.login("dlwnghks6821", "lms3821su12");
+            login.login("dlwnghks6821@naver.com", "lms3821su");
         } catch (IOException e) {
             e.printStackTrace();
         }
