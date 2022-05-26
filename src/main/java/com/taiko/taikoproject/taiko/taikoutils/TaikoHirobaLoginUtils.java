@@ -41,7 +41,7 @@ public class TaikoHirobaLoginUtils {
             button2.removeStyleAttribute("disabled");
 
             button2.click();
-            // 필수!
+            // 필수
             Thread.sleep(4000);
 
             HtmlPage page2 = wc.getPage("https://donderhiroba.jp/login_select.php");
@@ -52,10 +52,10 @@ public class TaikoHirobaLoginUtils {
             button3.click();
             // 유저 정보 페이지
             HtmlPage page3 = wc.getPage("https://donderhiroba.jp/index.php");
-            // List<HtmlDivision> myDonImg =
-            // page3.getByXPath("//img[@class='customd_mydon']");
-            // userInfo.put("myDonImag", myDonImg.get(0));
-
+            List<HtmlDivision> myDonImg = page3.getByXPath("//img[@class='customd_mydon']");
+            HtmlElement element = page3
+                    .getFirstByXPath("//div[@id='mydon_area']/div[2]/div[1]");
+            System.out.println("element : " + element.asNormalizedText()); // user name
             // final List<?> divs = page.getByXPath("//div");
             // for (int i = 0; i < divs.size(); i++) {
             // System.out.println(divs.get(i));
@@ -64,8 +64,8 @@ public class TaikoHirobaLoginUtils {
             // for (int i = 0; i < myDongInfo.size(); i++) {
             // System.out.println(myDongInfo.get(i));
             // }
-
-            resultMap.put("template", page3.asXml());
+            System.out.println(page3.asNormalizedText());
+            resultMap.put("message", page3.asXml());
         } catch (Exception e) {
             e.printStackTrace();
             resultMap.put("message", "서버와 통신하는데 시간이 오래걸리고있습니다.");

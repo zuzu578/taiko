@@ -6,11 +6,14 @@ import java.util.HashMap;
 import com.shapesecurity.salvation2.Values.Hash;
 import com.taiko.taikoproject.taiko.taikoutils.TaikoHirobaLoginUtils;
 import com.taiko.taikoproject.taikoVO.DonderHirobaLoginParam;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class DonderHirobaLogin {
 
     @PostMapping("/login")
