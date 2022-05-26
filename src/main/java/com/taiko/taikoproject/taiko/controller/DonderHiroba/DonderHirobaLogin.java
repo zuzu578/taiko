@@ -32,11 +32,11 @@ public class DonderHirobaLogin {
         TaikoHirobaLoginUtils login = new TaikoHirobaLoginUtils();
         DonderHirobaEntity donderHiroba = new DonderHirobaEntity();
         HashMap<String, Object> result = new HashMap<String, Object>();
-        donderHirobaEntity = donderHirobaRepository.findByuserMailAndUserPassword(loginvo.getUserId(),
-                loginvo.getUserPassowrd());
         String status = "";
         try {
             result = login.login(loginvo, donderHiroba);
+            donderHirobaEntity = donderHirobaRepository.findByuserMailAndUserPassword(loginvo.getUserId(),
+                    loginvo.getUserPassowrd());
             if (!result.get("message").equals("fail")) {
                 // 유저 데이터가 존재할 경우 원본으로부터 업데이트
                 if (donderHirobaEntity.isPresent()) {

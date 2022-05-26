@@ -47,7 +47,7 @@ public class TaikoHirobaLoginUtils {
             HtmlPage page2 = wc.getPage("https://donderhiroba.jp/login_select.php");
             System.out.println("----------------------동더 히로바 로그인 중 ... ------------------------");
 
-            Thread.sleep(3000);
+            Thread.sleep(3500);
 
             try {
                 HtmlAnchor button3 = page2.getAnchorByHref("javascript:void(0)");
