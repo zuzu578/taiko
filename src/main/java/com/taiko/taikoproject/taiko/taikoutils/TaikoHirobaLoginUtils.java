@@ -1,10 +1,11 @@
 package com.taiko.taikoproject.taiko.taikoutils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.DomElement;
+
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 
 import com.gargoylesoftware.htmlunit.html.HtmlDivision;
@@ -12,14 +13,13 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-
-import com.gargoylesoftware.htmlunit.protocol.data.DataUrlDecoder;
-import com.taiko.taikoproject.taiko.controller.DonderHiroba.DonderHirobaLogin;
+import com.taiko.taikoproject.entity.DonderHirobaEntity;
 import com.taiko.taikoproject.taikoVO.DonderHirobaLoginParam;
 
 public class TaikoHirobaLoginUtils {
 
-    public HashMap<String, Object> login(DonderHirobaLoginParam loginvo) throws Exception {
+    public HashMap<String, Object> login(DonderHirobaLoginParam loginvo, DonderHirobaEntity donderHiroba)
+            throws Exception {
         HashMap<String, Object> resultMap = new HashMap<String, Object>();
         WebClient wc = new WebClient();
         String template = "";
@@ -42,33 +42,72 @@ public class TaikoHirobaLoginUtils {
 
             button2.click();
             // 필수
-            Thread.sleep(4000);
+            Thread.sleep(5000);
 
             HtmlPage page2 = wc.getPage("https://donderhiroba.jp/login_select.php");
-            System.out.println(page2.asNormalizedText());
+            System.out.println("----------------------동더 히로바 로그인 중 ... ------------------------");
 
             Thread.sleep(3000);
-            HtmlAnchor button3 = page2.getAnchorByHref("javascript:void(0)");
-            button3.click();
+
+            try {
+                HtmlAnchor button3 = page2.getAnchorByHref("javascript:void(0)");
+                button3.click();
+            } catch (Exception e) {
+                resultMap.put("message", "fail");
+                return resultMap;
+            }
+
             // 유저 정보 페이지
             HtmlPage page3 = wc.getPage("https://donderhiroba.jp/index.php");
-            List<HtmlDivision> myDonImg = page3.getByXPath("//img[@class='customd_mydon']");
-            HtmlElement element = page3
-                    .getFirstByXPath("//div[@id='mydon_area']/div[2]/div[1]");
-            System.out.println("element : " + element.asNormalizedText()); // user name
-            // final List<?> divs = page.getByXPath("//div");
-            // for (int i = 0; i < divs.size(); i++) {
-            // System.out.println(divs.get(i));
-            // }
-            // List<HtmlDivision> myDongInfo = page3.getByXPath("//div[@id='mydon_area']");
-            // for (int i = 0; i < myDongInfo.size(); i++) {
-            // System.out.println(myDongInfo.get(i));
-            // }
-            System.out.println(page3.asNormalizedText());
-            resultMap.put("message", page3.asXml());
+            HtmlElement myDonImg = page3.getFirstByXPath("//div[@id='mydon_area']/div[3]/div[2]/img"); // 마이동 이미지
+
+            System.out.println("마이동 이미지 : " + myDonImg);
+            donderHiroba.setUserMydon(myDonImg.toString());
+
+            HtmlElement userName = page3
+                    .getFirstByXPath("//div[@id='mydon_area']/div[2]/div[1]"); // 유저이름
+            System.out.println("유저이름 : " + userName.asNormalizedText());
+            donderHiroba.setUserName(userName.asNormalizedText());
+
+            HtmlElement style = page3.getFirstByXPath("//div[@id='mydon_area']/div[1]"); // 칭호
+            System.out.println("스타일 : " + style.asNormalizedText());
+            donderHiroba.setUserStyle(style.asNormalizedText());
+            HtmlElement danwi = page3.getFirstByXPath("//div[@id='mydon_area']/div[2]/div[2]/img"); // 칭호
+            System.out.println("단위 : " + danwi);
+            donderHiroba.setUserDanwi(danwi.toString());
+
+            List<String> userScore = new ArrayList<String>();
+            for (int i = 1; i <= 10; i++) {
+                HtmlElement score = page3.getFirstByXPath("//div[@id='mydon_area']/div[4]/div[" + i + "]");
+                System.out.println("점수 : " + score.asNormalizedText());
+                userScore.add(score.asNormalizedText());
+            }
+            donderHiroba.setUserBestRank8(userScore.get(0));
+            donderHiroba.setUserBestRank7(userScore.get(1));
+            donderHiroba.setUserBestRank6(userScore.get(2));
+            donderHiroba.setUserBestRank5(userScore.get(3));
+            donderHiroba.setUserBestRank4(userScore.get(4));
+            donderHiroba.setUserBestRank3(userScore.get(5));
+            donderHiroba.setUserBestRank2(userScore.get(6));
+            donderHiroba.setUserSilverCrown(userScore.get(7));
+            donderHiroba.setUserGoldCrown(userScore.get(8));
+            donderHiroba.setUserDonderfulCrown(userScore.get(9));
+
+            HtmlElement donMedal = page3.getFirstByXPath("//div[@id='mydon_area']/div[5]/div[1]/div[2]");
+            HtmlElement token = page3.getFirstByXPath("//div[@id='mydon_area']/div[5]/div[2]/div[2]");
+            System.out.println("동메달 : " + donMedal.asNormalizedText() + "토큰 : " + token.asNormalizedText());
+
+            donderHiroba.setUserDonmedal(donMedal.asNormalizedText());
+            donderHiroba.setUserToken(token.asNormalizedText());
+
+            donderHiroba.setUserMail(loginvo.getUserId());
+            donderHiroba.setUserPassword(loginvo.getUserPassowrd());
+
+            resultMap.put("message", "데이터연동이 정상적으로 처리되었습니다.");
+
         } catch (Exception e) {
             e.printStackTrace();
-            resultMap.put("message", "서버와 통신하는데 시간이 오래걸리고있습니다.");
+            resultMap.put("message", "fail");
 
         }
         return resultMap;
