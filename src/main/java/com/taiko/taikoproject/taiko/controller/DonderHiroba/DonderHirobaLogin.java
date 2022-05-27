@@ -2,11 +2,15 @@ package com.taiko.taikoproject.taiko.controller.DonderHiroba;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 import com.shapesecurity.salvation2.Values.Hash;
 import com.taiko.taikoproject.entity.DonderHirobaEntity;
+import com.taiko.taikoproject.entity.UserFavoriteSongEntity;
+import com.taiko.taikoproject.entity.UserLikeSongEntity;
 import com.taiko.taikoproject.repository.DonderHirobaRepository;
+import com.taiko.taikoproject.repository.UserFavoriteSongRepository;
 import com.taiko.taikoproject.taiko.taikoutils.TaikoHirobaLoginUtils;
 import com.taiko.taikoproject.taikoVO.DonderHirobaLoginParam;
 
@@ -25,18 +29,33 @@ public class DonderHirobaLogin {
     @Autowired
     DonderHirobaRepository donderHirobaRepository;
 
+    @Autowired
+    UserFavoriteSongRepository userFavoriteSongRepository;
+
     Optional<DonderHirobaEntity> donderHirobaEntity;
+    Optional<UserFavoriteSongEntity> userFavoriteSongEntity;
+
+    private int i = 0;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody DonderHirobaLoginParam loginvo) throws Exception {
+
         TaikoHirobaLoginUtils login = new TaikoHirobaLoginUtils();
         DonderHirobaEntity donderHiroba = new DonderHirobaEntity();
+        UserFavoriteSongEntity favoriteSongEntity = new UserFavoriteSongEntity();
+        UserLikeSongEntity userLikeSongEntity = new UserLikeSongEntity();
+
         HashMap<String, Object> result = new HashMap<String, Object>();
         String status = "";
         try {
-            result = login.login(loginvo, donderHiroba);
+            result = login.login(loginvo, donderHiroba, favoriteSongEntity, userLikeSongEntity);
             donderHirobaEntity = donderHirobaRepository.findByuserMailAndUserPassword(loginvo.getUserId(),
                     loginvo.getUserPassowrd());
+
+            int userIdx = donderHirobaEntity.get().getUserNo();
+
+            userFavoriteSongEntity = userFavoriteSongRepository.findByuserIdx(userIdx);
+
             if (!result.get("message").equals("fail")) {
                 // 유저 데이터가 존재할 경우 원본으로부터 업데이트
                 if (donderHirobaEntity.isPresent()) {
@@ -61,6 +80,15 @@ public class DonderHirobaLogin {
                         donderHirobaRepository.save(item);
 
                     });
+
+                    List<UserFavoriteSongEntity> favoriteList = (List<UserFavoriteSongEntity>) result.get("favorites");
+                    for (i = 0; i < favoriteList.size(); i++) {
+                        userFavoriteSongEntity.get().setUserIdx(userIdx);
+                        userFavoriteSongEntity.get().setUserFavoriteSong(favoriteList.get(i).toString());
+                        userFavoriteSongRepository.saveAll(favoriteList);
+
+                    }
+
                 } else {
                     status = "sync";
                     // 존재하지 않을경우 연동

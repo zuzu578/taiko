@@ -5,24 +5,27 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.gargoylesoftware.htmlunit.WebClient;
-
+import com.gargoylesoftware.htmlunit.html.DomElement;
+import com.gargoylesoftware.htmlunit.html.DomNodeList;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 
 import com.gargoylesoftware.htmlunit.html.HtmlDivision;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
-
+import com.gargoylesoftware.htmlunit.html.HtmlImageInput;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.taiko.taikoproject.entity.DonderHirobaEntity;
+import com.taiko.taikoproject.entity.UserFavoriteSongEntity;
+import com.taiko.taikoproject.entity.UserLikeSongEntity;
 import com.taiko.taikoproject.taikoVO.DonderHirobaLoginParam;
 
 public class TaikoHirobaLoginUtils {
 
-    public HashMap<String, Object> login(DonderHirobaLoginParam loginvo, DonderHirobaEntity donderHiroba)
+    public HashMap<String, Object> login(DonderHirobaLoginParam loginvo, DonderHirobaEntity donderHiroba,
+            UserFavoriteSongEntity favoriteSongEntity, UserLikeSongEntity userLikeSongEntity)
             throws Exception {
         HashMap<String, Object> resultMap = new HashMap<String, Object>();
         WebClient wc = new WebClient();
-        String template = "";
 
         String url = "https://account.bandainamcoid.com/login.html?client_id=nbgi_taiko&customize_id=&redirect_uri=https%3A%2F%2Fwww.bandainamcoid.com%2Fv2%2Foauth2%2Fauth%3Fback%3Dv3%26client_id%3Dnbgi_taiko%26scope%3DJpGroupAll%26redirect_uri%3Dhttps%253A%252F%252Fdonderhiroba.jp%252Flogin_process.php%253Finvite_code%253D%2526abs_back_url%253D%2526location_code%253D%26text%3D&prompt=login";
         wc.getOptions().setThrowExceptionOnScriptError(false);
@@ -103,8 +106,21 @@ public class TaikoHirobaLoginUtils {
             donderHiroba.setUserMail(loginvo.getUserId());
             donderHiroba.setUserPassword(loginvo.getUserPassowrd());
 
-            resultMap.put("message", "데이터연동이 정상적으로 처리되었습니다.");
+            HtmlElement button3 = page3.getFirstByXPath("//img[@class='buttonImage']");
+            button3.click();
+            Thread.sleep(3000);
+            // 좋아하는 곡 list page
+            HtmlPage page4 = wc.getPage("https://donderhiroba.jp/mypage_top.php");
 
+            DomNodeList<DomElement> optionStatusList = page4.getElementsByTagName("li");
+            List<String> favoriteSongList = new ArrayList<String>();
+
+            for (int i = 0; i < optionStatusList.size(); i++) {
+                System.out.println("test" + optionStatusList.get(i).asNormalizedText());
+                favoriteSongList.add(optionStatusList.get(i).asNormalizedText());
+            }
+            resultMap.put("message", "데이터연동이 정상적으로 처리되었습니다.");
+            resultMap.put("favorites", favoriteSongList);
         } catch (Exception e) {
             e.printStackTrace();
             resultMap.put("message", "fail");

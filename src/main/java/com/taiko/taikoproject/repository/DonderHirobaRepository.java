@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.taiko.taikoproject.entity.DonderHirobaEntity;
-import com.taiko.taikoproject.taikoVO.DonderHirobaLoginParam;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
