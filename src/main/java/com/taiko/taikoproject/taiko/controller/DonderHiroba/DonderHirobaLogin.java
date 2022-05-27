@@ -38,7 +38,6 @@ public class DonderHirobaLogin {
     Optional<DonderHirobaEntity> donderHirobaEntityOptional;
     Optional<UserFavoriteSongEntity> userFavoriteSongEntityOptional;
 
-    private int i = 0;
     @Autowired
     private SqlSession sqlSession;
     protected static final String NAMESPACE = "com.taiko.taikoproject.taikoDao.";
@@ -89,19 +88,20 @@ public class DonderHirobaLogin {
                     int songCount = sqlSession.selectOne("com.taiko.taikoproject.taikoDao." + "selectSongCountByUser",
                             favoriteSongEntity);
                     List favoriteList = (List) result.get("favorites");
-                    for (i = 2; i < favoriteList.size(); i++) {
+                    for (int i = 2; i < favoriteList.size(); i++) {
                         if (songCount == 0) {
                             favoriteSongEntity.setUserFavoriteSong(favoriteList.get(i).toString());
                             sqlSession.insert("com.taiko.taikoproject.taikoDao." + "insertFavoriteSong",
                                     favoriteSongEntity);
-                        } else {
-
-                            favoriteSongEntity.setUserFavoriteSong(favoriteList.get(i).toString());
-                            sqlSession.delete("com.taiko.taikoproject.taikoDao." + "deleteFavoriteSong",
-                                    favoriteSongEntity);
+                        }
+                    }
+                    if (songCount <= 0) {
+                        sqlSession.delete("com.taiko.taikoproject.taikoDao." + "deleteFavoriteSong",
+                                favoriteSongEntity);
+                        for (int j = 0; j < favoriteList.size(); j++) {
+                            favoriteSongEntity.setUserFavoriteSong(favoriteList.get(j).toString());
                             sqlSession.insert("com.taiko.taikoproject.taikoDao." + "insertFavoriteSong",
                                     favoriteSongEntity);
-
                         }
 
                     }
