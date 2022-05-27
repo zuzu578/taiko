@@ -100,4 +100,19 @@
 
 
 		</select>
+		<insert id="insertFavoriteSong" parameterType="com.taiko.taikoproject.entity.UserFavoriteSongEntity">
+		insert into user_favorite_song (user_idx,user_favorite_song) values('${userIdx}','${userFavoriteSong}')
+
+		</insert>
+		<update id="updateFavoriteSong" parameterType="com.taiko.taikoproject.entity.UserFavoriteSongEntity">
+			UPDATE user_favorite_song
+			SET user_favorite_song = '${userFavoriteSong}'
+			WHERE user_idx = '${userIdx}'
+		</update>
+		<select id="selectSongCountByUser" resultType="int">
+			select count(*) from user_favorite_song where user_idx = '${userIdx}'
+		</select>
+		<delete id="deleteFavoriteSong" parameterType="com.taiko.taikoproject.entity.UserFavoriteSongEntity">
+			delete from user_favorite_song where user_idx = '${userIdx}'
+		</delete>
 </mapper>

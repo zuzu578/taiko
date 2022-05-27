@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import com.shapesecurity.salvation2.Values.Hash;
 import com.taiko.taikoproject.entity.DonderHirobaEntity;
 import com.taiko.taikoproject.entity.UserFavoriteSongEntity;
@@ -14,6 +16,7 @@ import com.taiko.taikoproject.repository.UserFavoriteSongRepository;
 import com.taiko.taikoproject.taiko.taikoutils.TaikoHirobaLoginUtils;
 import com.taiko.taikoproject.taikoVO.DonderHirobaLoginParam;
 
+import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,10 +35,13 @@ public class DonderHirobaLogin {
     @Autowired
     UserFavoriteSongRepository userFavoriteSongRepository;
 
-    Optional<DonderHirobaEntity> donderHirobaEntity;
-    Optional<UserFavoriteSongEntity> userFavoriteSongEntity;
+    Optional<DonderHirobaEntity> donderHirobaEntityOptional;
+    Optional<UserFavoriteSongEntity> userFavoriteSongEntityOptional;
 
     private int i = 0;
+    @Autowired
+    private SqlSession sqlSession;
+    protected static final String NAMESPACE = "com.taiko.taikoproject.taikoDao.";
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody DonderHirobaLoginParam loginvo) throws Exception {
@@ -49,18 +55,16 @@ public class DonderHirobaLogin {
         String status = "";
         try {
             result = login.login(loginvo, donderHiroba, favoriteSongEntity, userLikeSongEntity);
-            donderHirobaEntity = donderHirobaRepository.findByuserMailAndUserPassword(loginvo.getUserId(),
+            donderHirobaEntityOptional = donderHirobaRepository.findByuserMailAndUserPassword(loginvo.getUserId(),
                     loginvo.getUserPassowrd());
 
-            int userIdx = donderHirobaEntity.get().getUserNo();
-
-            userFavoriteSongEntity = userFavoriteSongRepository.findByuserIdx(userIdx);
+            int userIdx = donderHirobaEntityOptional.get().getUserNo();
 
             if (!result.get("message").equals("fail")) {
                 // 유저 데이터가 존재할 경우 원본으로부터 업데이트
-                if (donderHirobaEntity.isPresent()) {
+                if (donderHirobaEntityOptional.isPresent()) {
                     status = "update";
-                    donderHirobaEntity.ifPresent(item -> {
+                    donderHirobaEntityOptional.ifPresent(item -> {
                         item.setUserBestRank2(donderHiroba.getUserBestRank2());
                         item.setUserBestRank2(donderHiroba.getUserBestRank3());
                         item.setUserBestRank2(donderHiroba.getUserBestRank4());
@@ -81,11 +85,24 @@ public class DonderHirobaLogin {
 
                     });
 
-                    List<UserFavoriteSongEntity> favoriteList = (List<UserFavoriteSongEntity>) result.get("favorites");
-                    for (i = 0; i < favoriteList.size(); i++) {
-                        userFavoriteSongEntity.get().setUserIdx(userIdx);
-                        userFavoriteSongEntity.get().setUserFavoriteSong(favoriteList.get(i).toString());
-                        userFavoriteSongRepository.saveAll(favoriteList);
+                    favoriteSongEntity.setUserIdx(userIdx);
+                    int songCount = sqlSession.selectOne("com.taiko.taikoproject.taikoDao." + "selectSongCountByUser",
+                            favoriteSongEntity);
+                    List favoriteList = (List) result.get("favorites");
+                    for (i = 2; i < favoriteList.size(); i++) {
+                        if (songCount == 0) {
+                            favoriteSongEntity.setUserFavoriteSong(favoriteList.get(i).toString());
+                            sqlSession.insert("com.taiko.taikoproject.taikoDao." + "insertFavoriteSong",
+                                    favoriteSongEntity);
+                        } else {
+
+                            favoriteSongEntity.setUserFavoriteSong(favoriteList.get(i).toString());
+                            sqlSession.delete("com.taiko.taikoproject.taikoDao." + "deleteFavoriteSong",
+                                    favoriteSongEntity);
+                            sqlSession.insert("com.taiko.taikoproject.taikoDao." + "insertFavoriteSong",
+                                    favoriteSongEntity);
+
+                        }
 
                     }
 
@@ -108,7 +125,7 @@ public class DonderHirobaLogin {
 
         } catch (IOException e) {
             e.printStackTrace();
-            result.put("message", "아이디 혹은 비밀번호를 다시확인해주세요.");
+            result.put("message", "서버에 오류가 있습니다.");
             return new ResponseEntity<>("fail", HttpStatus.BAD_REQUEST);
         }
 
