@@ -20,7 +20,7 @@ public class MyCostume {
     public List<DonderHirobaUserCostumeEntity> getCostume(HttpServletRequest req) {
         String userIdx = req.getParameter("userIdx");
         List<DonderHirobaUserCostumeEntity> result = donderHirobaUserCostumeRepository
-                .findByuserId(Integer.parseInt(userIdx));
+                .findByuserIdx(Integer.parseInt(userIdx));
         return result;
     }
 }

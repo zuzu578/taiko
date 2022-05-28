@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DonderHirobaUserCostumeRepository extends JpaRepository<DonderHirobaUserCostumeEntity, Integer> {
 
-    List<DonderHirobaUserCostumeEntity> findByuserId(int parseInt);
+    List<DonderHirobaUserCostumeEntity> findByuserIdx(int parseInt);
 
 }
