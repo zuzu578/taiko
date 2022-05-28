@@ -1,9 +1,14 @@
 package com.taiko.taikoproject.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity(name = "user_hiroba_costume") // table name
 public class DonderHirobaUserCostumeEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idx;
     private int userIdx;
     private String costumeUrl;

@@ -118,4 +118,12 @@
 		<select id="selectUserCostume" resultType="int">
 			select count(*) from user_hiroba_costume where user_idx = '${userIdx}'
 		</select>
+		<insert id="insertCostumeList" parameterType="hashMap">
+			insert into user_hiroba_costume values(user_idx,costume_url,costume_type)
+			values('${userIdx}','${costume}''${costumeType}')
+		</insert>
+
+		<delete id="deleteCostume" parameterType="hashMap">
+			delete from user_hiroba_costume where user_idx = '${userIdx}'
+		</delete>
 </mapper>
