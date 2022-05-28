@@ -9,6 +9,7 @@ import com.taiko.taikoproject.repository.DonderHirobaUserCostumeRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -17,6 +18,7 @@ public class MyCostume {
     @Autowired
     DonderHirobaUserCostumeRepository donderHirobaUserCostumeRepository;
 
+    @GetMapping("/getCostume")
     public List<DonderHirobaUserCostumeEntity> getCostume(HttpServletRequest req) {
         String userIdx = req.getParameter("userIdx");
         List<DonderHirobaUserCostumeEntity> result = donderHirobaUserCostumeRepository
