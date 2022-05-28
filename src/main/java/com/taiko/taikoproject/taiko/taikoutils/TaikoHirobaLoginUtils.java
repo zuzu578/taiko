@@ -14,6 +14,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlImageInput;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.javascript.host.html.HTMLElement;
 import com.taiko.taikoproject.entity.DonderHirobaEntity;
 import com.taiko.taikoproject.entity.UserFavoriteSongEntity;
 import com.taiko.taikoproject.entity.UserLikeSongEntity;
@@ -119,8 +120,49 @@ public class TaikoHirobaLoginUtils {
                 System.out.println("test" + optionStatusList.get(i).asNormalizedText());
                 favoriteSongList.add(optionStatusList.get(i).asNormalizedText());
             }
+            // 옷갈아 입히기 page
+            HtmlPage page5 = wc.getPage("https://donderhiroba.jp/mypage_kisekae.php");
+
+            HtmlElement button4 = page5.getFirstByXPath("/html/body/div/div/div[1]/div[2]/div[1]/ul[2]/li[1]");
+            button4.click();
+
+            List<?> atamaList = page5.getByXPath("/html/body/div/div/div[1]/div[2]/div[2]/div[5]/div[2]/ul/li/a/img");
+
+            for (int i = 0; i < atamaList.size(); i++) {
+                System.out.println(atamaList.get(i));
+            }
+            HtmlElement button5 = page5.getFirstByXPath("/html/body/div/div/div[1]/div[2]/div[1]/ul[2]/li[3]");
+            button5.click();
+
+            List<?> kigurumiList = page5
+                    .getByXPath("/html/body/div/div/div[1]/div[2]/div[2]/div[4]/div[2]/ul/li/a/img");
+
+            HtmlElement button6 = page5.getFirstByXPath("/html/body/div/div/div[1]/div[2]/div[1]/ul[2]/li[5]");
+            button6.click();
+
+            List<?> puchiCharacter = page5
+                    .getByXPath("/html/body/div/div/div[1]/div[2]/div[2]/div[8]/div[2]/ul/li/a/img");
+
+            HtmlElement button7 = page5.getFirstByXPath("/html/body/div/div/div[1]/div[2]/div[1]/ul[2]/li[2]");
+            button7.click();
+
+            List<?> karadaList = page5
+                    .getByXPath("/html/body/div/div/div[1]/div[2]/div[2]/div[6]/div[2]/ul/li/a/img");
+
+            HtmlElement button8 = page5.getFirstByXPath("/html/body/div/div/div[1]/div[2]/div[1]/ul[2]/li[4]");
+            button8.click();
+
+            List<?> makeUpList = page5
+                    .getByXPath("/html/body/div/div/div[1]/div[2]/div[2]/div[7]/div[2]/ul/li/a/img");
+
             resultMap.put("message", "데이터연동이 정상적으로 처리되었습니다.");
             resultMap.put("favorites", favoriteSongList);
+            resultMap.put("atamaList", atamaList);
+            resultMap.put("kigurumiList", kigurumiList);
+            resultMap.put("puchiCharacter", puchiCharacter);
+            resultMap.put("karadaList", karadaList);
+            resultMap.put("makeUpList", makeUpList);
+
         } catch (Exception e) {
             e.printStackTrace();
             resultMap.put("message", "fail");

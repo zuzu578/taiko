@@ -115,4 +115,7 @@
 		<delete id="deleteFavoriteSong" parameterType="com.taiko.taikoproject.entity.UserFavoriteSongEntity">
 			delete from user_favorite_song where user_idx = '${userIdx}'
 		</delete>
+		<select id="selectUserCostume" resultType="int">
+			select count(*) from user_hiroba_costume where user_idx = '${userIdx}'
+		</select>
 </mapper>
