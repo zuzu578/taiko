@@ -5,9 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
-
-import com.shapesecurity.salvation2.Values.Hash;
 import com.taiko.taikoproject.entity.DonderHirobaEntity;
 import com.taiko.taikoproject.entity.DonderHirobaUserCostumeEntity;
 import com.taiko.taikoproject.entity.UserFavoriteSongEntity;
@@ -17,7 +14,6 @@ import com.taiko.taikoproject.repository.UserFavoriteSongRepository;
 import com.taiko.taikoproject.taiko.taikoutils.TaikoHirobaLoginUtils;
 import com.taiko.taikoproject.taikoVO.DonderHirobaLoginParam;
 
-import org.apache.ibatis.binding.MapperMethod.ParamMap;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
