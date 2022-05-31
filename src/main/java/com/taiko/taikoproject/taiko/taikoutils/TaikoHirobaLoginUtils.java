@@ -46,7 +46,7 @@ public class TaikoHirobaLoginUtils {
 
             button2.click();
             // 필수
-            Thread.sleep(5000);
+            Thread.sleep(5500);
 
             HtmlPage page2 = wc.getPage("https://donderhiroba.jp/login_select.php");
             System.out.println("----------------------동더 히로바 로그인 중 ... ------------------------");
@@ -154,6 +154,16 @@ public class TaikoHirobaLoginUtils {
 
             List<?> makeUpList = page5
                     .getByXPath("/html/body/div/div/div[1]/div[2]/div[2]/div[7]/div[2]/ul/li/a/img");
+
+            // HtmlPage page6 = wc.getPage("https://donderhiroba.jp/reward_top.php");
+            // // 칭호 버튼
+            // HtmlElement button9 =
+            // page6.getFirstByXPath("/html/body/div[1]/div/div[1]/div/a[2]/img");
+            // button9.click();
+
+            // Thread.sleep(1500);
+            // DomNodeList<DomElement> styleList = page6.getElementsByTagName("li");
+            // styleList.forEach(item -> System.out.println("styleList====>" + item));
 
             resultMap.put("message", "데이터연동이 정상적으로 처리되었습니다.");
             resultMap.put("favorites", favoriteSongList);
