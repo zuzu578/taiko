@@ -19,11 +19,11 @@ public class TaikoMapUtils {
 
         try {
 
-            Document doc = Jsoup
-                    .connect(url)
-                    .ignoreHttpErrors(true).timeout(5000).get();
-            Thread.sleep(6000);
-            System.out.println("tesT!!!!!!!!" + doc);
+            WebClient wc = new WebClient();
+            wc.getOptions().setThrowExceptionOnScriptError(false);
+            HtmlPage page = (HtmlPage) wc.getPage(url);
+            Thread.sleep(4000);
+            System.out.println("page" + page);
 
         } catch (Exception e) {
             e.printStackTrace();
