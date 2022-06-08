@@ -1,5 +1,11 @@
 # 스프링부트와 하이버네이트를 이용한 , 다시만들어보는 태고의달인 커뮤니티 백엔드 
 
+# 2022 년 5월 29일 개념글 고맙다 
+
+https://gall.dcinside.com/mgallery/board/view/?id=taiko&no=162694&exception_mode=recommend&page=1
+
+응..
+
 # 2022 년 5/13 일 기준 개발 
 
 select 는 mybatis , update , delete , insert 등은 하이버네이트 사용을 위해 하이버네이트 , 마이바티스 configuration 작업 
