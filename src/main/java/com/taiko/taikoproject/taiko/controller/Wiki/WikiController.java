@@ -4,6 +4,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Paths;
+import java.util.HashMap;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,22 +24,28 @@ public class WikiController {
     private static String FilePath = "/Users/helloworld/taiko_wiki/src/assets/image";
 
     @PostMapping("/uploadFile")
-    public String uploadFile(MultipartFile file) {
+    public HashMap<String, Object> uploadFile(MultipartFile file) {
+
+        HashMap<String, Object> resultMap = new HashMap<String, Object>();
 
         try {
+            if (!file.isEmpty()) {
+                String fileName = file.getOriginalFilename();
+                String filePath = Paths.get(FilePath, fileName).toString();
 
-            String fileName = file.getOriginalFilename();
-            String filePath = Paths.get(FilePath, fileName).toString();
+                BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
+                stream.write(file.getBytes());
+                stream.close();
+                resultMap.put("fileName", fileName);
+                resultMap.put("filePath", filePath);
 
-            BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
-            stream.write(file.getBytes());
-            stream.close();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return "";
+        return resultMap;
     }
 
 }
