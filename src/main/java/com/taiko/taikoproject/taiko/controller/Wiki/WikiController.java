@@ -23,6 +23,12 @@ public class WikiController {
 
     private static String FilePath = "/Users/helloworld/taiko_wiki/src/assets/image";
 
+    /**
+     * 위키백과에서 게시글에 이미지를 업로드할경우 이미지를 업로드하고 , callback 으로 이미지 경로를 return한다.
+     * 
+     * @param file
+     * @return
+     */
     @PostMapping("/uploadFile")
     public HashMap<String, Object> uploadFile(MultipartFile file) {
 
