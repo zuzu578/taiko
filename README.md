@@ -12,7 +12,7 @@ select 는 mybatis , update , delete , insert 등은 하이버네이트 사용�
 
 태고의달인 공식사이트 https://taiko.namco-ch.net/taiko/songlist/namco.php#sgnavi 에서 데이터를 크롤링하여 데이터베이스에 적재작업 , 
 
-# 하이버네이트에서 repository , entity 를 찾지못해 의존성주입을 못하는경우 
+# spring data jpa 에서  repository , entity 를 찾지못해 의존성주입을 못하는경우 
 <img width="857" alt="스크린샷 2022-05-13 오후 11 11 49" src="https://user-images.githubusercontent.com/69393030/168302292-3fb2964b-34fc-4eae-8596-ecb96bd2b041.png">
 
 @EnableJpaRepositories(basePackages = { "com.taiko.taikoproject.repository" })
