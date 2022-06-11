@@ -5,8 +5,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -85,6 +88,7 @@ public class WikiController {
 
     @GetMapping("/getSameLevelClass")
     public ResponseEntity getSameLevelClass(HttpServletRequest req) {
+
         String level = req.getParameter("level");
         List<WikiEntity> result = wikiRepository.findByoniContaining(level);
         return new ResponseEntity<>(result, HttpStatus.OK);
