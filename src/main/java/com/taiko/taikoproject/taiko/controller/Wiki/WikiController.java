@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -79,6 +80,13 @@ public class WikiController {
     public ResponseEntity getWikiData(HttpServletRequest req) {
         String title = req.getParameter("searchKeyword").toString();
         WikiEntity result = wikiRepository.findBytitleContaining(title);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/getSameLevelClass")
+    public ResponseEntity getSameLevelClass(HttpServletRequest req) {
+        String level = req.getParameter("level");
+        List<WikiEntity> result = wikiRepository.findByoniContaining(level);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
