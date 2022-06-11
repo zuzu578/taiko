@@ -4,6 +4,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -66,6 +67,10 @@ public class WikiController {
 
     @PostMapping("/postingWiki")
     public ResponseEntity postingWiki(@ModelAttribute WikiEntity wikiParam) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String format_time2 = format.format(System.currentTimeMillis());
+        wikiParam.setCreated_time(format_time2);
+
         wikiRepository.save(wikiParam);
         return new ResponseEntity<>("success", HttpStatus.OK);
     }
