@@ -6,8 +6,17 @@ import java.io.FileOutputStream;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
+import javax.servlet.http.HttpServletRequest;
+
+import com.taiko.taikoproject.entity.WikiEntity;
+import com.taiko.taikoproject.repository.WikiRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +29,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 @RequestMapping("/wiki")
 @CrossOrigin(origins = "http://localhost:3000")
 public class WikiController {
+
+    @Autowired
+    WikiRepository wikiRepository;
 
     private static String FilePath = "/Users/helloworld/taiko_wiki/src/assets/image";
 
@@ -38,13 +50,11 @@ public class WikiController {
             if (!file.isEmpty()) {
                 String fileName = file.getOriginalFilename();
                 String filePath = Paths.get(FilePath, fileName).toString();
-
                 BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
                 stream.write(file.getBytes());
                 stream.close();
                 resultMap.put("fileName", fileName);
                 resultMap.put("filePath", filePath);
-
             }
 
         } catch (Exception e) {
@@ -52,6 +62,19 @@ public class WikiController {
         }
 
         return resultMap;
+    }
+
+    @PostMapping("/postingWiki")
+    public ResponseEntity postingWiki(@ModelAttribute WikiEntity wikiParam) {
+        wikiRepository.save(wikiParam);
+        return new ResponseEntity<>("success", HttpStatus.OK);
+    }
+
+    @GetMapping("/getWikiData")
+    public ResponseEntity getWikiData(HttpServletRequest req) {
+        String title = req.getParameter("searchKeyword").toString();
+        WikiEntity result = wikiRepository.findBytitleContaining(title);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 }
