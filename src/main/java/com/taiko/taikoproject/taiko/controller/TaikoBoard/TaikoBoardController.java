@@ -62,8 +62,8 @@ public class TaikoBoardController {
     private SqlSession sqlSession;
     protected static final String NAMESPACE = "com.taiko.taikoproject.taikoDao.";
 
-    // @Autowired
-    // TaikoBoardService taikoBoardService;
+    @Autowired
+    TaikoBoardService taikoBoardService;
 
     @Autowired
     TaikoBoardListRepository taikoBoard;
@@ -79,25 +79,22 @@ public class TaikoBoardController {
 
     Optional<TaikoBoardEntity> entity;
 
-    @PersistenceContext
-    EntityManager entityManager;
+    // @GetMapping("/test")
+    // public ResponseEntity<?> test() {
+    // JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+    // QTaikoBoardEntity board = new QTaikoBoardEntity("board");
 
-    @GetMapping("/test")
-    public ResponseEntity<?> test() {
-        JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
-        QTaikoBoardEntity board = new QTaikoBoardEntity("board");
+    // List<TaikoBoardEntity> result = queryFactory
+    // .select(board)
+    // .from(board)
+    // .where(board.deletedTime.isNull())
+    // .orderBy(board.createdTime.asc())
+    // .offset(0)
+    // .limit(10)
+    // .fetch();
 
-        List<TaikoBoardEntity> result = queryFactory
-                .select(board)
-                .from(board)
-                .where(board.deletedTime.isNull())
-                .orderBy(board.createdTime.asc())
-                .offset(0)
-                .limit(10)
-                .fetch();
-
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+    // return new ResponseEntity<>(result, HttpStatus.OK);
+    // }
 
     @GetMapping("/board")
     public ResponseEntity<?> getBoardList(HttpServletRequest req, final Pageable pageable) {
