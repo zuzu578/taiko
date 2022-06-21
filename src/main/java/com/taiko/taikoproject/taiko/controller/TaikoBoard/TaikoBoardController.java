@@ -20,6 +20,7 @@ import com.taiko.taikoproject.repository.TaikoBoardCommentListRepository;
 import com.taiko.taikoproject.repository.TaikoBoardListRepository;
 import com.taiko.taikoproject.repository.TaikoCRUDRepository;
 import com.taiko.taikoproject.repository.TaikoTjaFileRepository;
+import com.taiko.taikoproject.service.board.TaikoBoardService;
 import com.taiko.taikoproject.taiko.controller.PasswordCrypto;
 import com.taiko.taikoproject.taikoVO.DeleteParam;
 import com.taiko.taikoproject.taikoVO.TaikoBoardCommentsVO;
@@ -69,19 +70,28 @@ public class TaikoBoardController {
     @Autowired
     TaikoCRUDRepository crud;
 
+    @Autowired
+    TaikoBoardService taikoBoardService;
+
     Optional<TaikoBoardEntity> entity;
 
     @GetMapping("/board")
     public ResponseEntity getBoardList(HttpServletRequest req, final Pageable pageable) {
 
-        String pageNum = req.getParameter("pageNum");
-        if (pageNum == "" || pageNum == null) {
-            pageNum = "0";
-        }
+        // 기존 순수 JPA
+        // String pageNum = req.getParameter("pageNum");
+        // if (pageNum == "" || pageNum == null) {
+        // pageNum = "0";
+        // }
 
-        Pageable result = PageRequest.of(Integer.parseInt(pageNum), 5, Sort.by("createdTime").descending());
-        return new ResponseEntity<>(taikoBoard.findBydeletedTimeNull(result), HttpStatus.OK);
+        // Pageable result = PageRequest.of(Integer.parseInt(pageNum), 5,
+        // Sort.by("createdTime").descending());
+        // return new ResponseEntity<>(taikoBoard.findBydeletedTimeNull(result),
+        // HttpStatus.OK);
 
+        // queryDsl 로 마이그레이션 한 코드.
+
+        return null;
     }
 
     @GetMapping("/boardDetail")
