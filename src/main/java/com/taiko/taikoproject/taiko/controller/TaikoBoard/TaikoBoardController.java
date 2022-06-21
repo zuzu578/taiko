@@ -10,8 +10,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.taiko.taikoproject.entity.QTaikoBoardEntity;
 import com.taiko.taikoproject.entity.TaikoBoardCommentListEntity;
 import com.taiko.taikoproject.entity.TaikoBoardEntity;
 import com.taiko.taikoproject.entity.TaikoSongListEntity;
@@ -58,6 +62,9 @@ public class TaikoBoardController {
     private SqlSession sqlSession;
     protected static final String NAMESPACE = "com.taiko.taikoproject.taikoDao.";
 
+    // @Autowired
+    // TaikoBoardService taikoBoardService;
+
     @Autowired
     TaikoBoardListRepository taikoBoard;
 
@@ -70,13 +77,30 @@ public class TaikoBoardController {
     @Autowired
     TaikoCRUDRepository crud;
 
-    @Autowired
-    TaikoBoardService taikoBoardService;
-
     Optional<TaikoBoardEntity> entity;
 
+    @PersistenceContext
+    EntityManager entityManager;
+
+    @GetMapping("/test")
+    public ResponseEntity<?> test() {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+        QTaikoBoardEntity board = new QTaikoBoardEntity("board");
+
+        List<TaikoBoardEntity> result = queryFactory
+                .select(board)
+                .from(board)
+                .where(board.deletedTime.isNull())
+                .orderBy(board.createdTime.asc())
+                .offset(0)
+                .limit(10)
+                .fetch();
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
     @GetMapping("/board")
-    public ResponseEntity getBoardList(HttpServletRequest req, final Pageable pageable) {
+    public ResponseEntity<?> getBoardList(HttpServletRequest req, final Pageable pageable) {
 
         // 기존 순수 JPA
         // String pageNum = req.getParameter("pageNum");
@@ -91,7 +115,8 @@ public class TaikoBoardController {
 
         // queryDsl 로 마이그레이션 한 코드.
 
-        return null;
+        return new ResponseEntity<>("taikoBoardService.getBoardList()", HttpStatus.OK);
+
     }
 
     @GetMapping("/boardDetail")

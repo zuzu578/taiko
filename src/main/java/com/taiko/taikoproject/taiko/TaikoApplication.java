@@ -13,11 +13,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = { "com.taiko.taikoproject.repository" })
 @EntityScan(basePackages = { "com.taiko.taikoproject.entity" })
+// 빈등록했는데 autowire 시 의존성을 찾지못할경우
+// @ComponentScan(basePackages = {
+// "com.taiko.taikoproject.service.board.TaikoBoardService" })
 public class TaikoApplication {
 
 	public static void main(String[] args) {
