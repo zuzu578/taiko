@@ -9,12 +9,11 @@ import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.DomNodeList;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 
-import com.gargoylesoftware.htmlunit.html.HtmlDivision;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlImageInput;
+
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.javascript.host.html.HTMLElement;
+
 import com.taiko.taikoproject.entity.DonderHirobaEntity;
 import com.taiko.taikoproject.entity.UserFavoriteSongEntity;
 import com.taiko.taikoproject.entity.UserLikeSongEntity;
@@ -34,15 +33,21 @@ public class TaikoHirobaLoginUtils {
             HtmlPage page = (HtmlPage) wc.getPage(url);
             HtmlInput id = (HtmlInput) page.getElementByName("mail");
             HtmlInput password = (HtmlInput) page.getElementByName("pass");
+
+            wc.getOptions().setThrowExceptionOnScriptError(false);
+            wc.getOptions().setUseInsecureSSL(true);
+
+            wc.waitForBackgroundJavaScript(10000);
+
             id.setValueAttribute(loginvo.getUserId());
             password.setValueAttribute(loginvo.getUserPassowrd());
             System.out.println("입력한 id =>" + id.getValueAttribute() + "입력한 pw =>" + password.getValueAttribute());
             password.getValueAttribute();
 
-            HtmlElement button2 = page.getFirstByXPath("//button[@class='btn _btn-size-50 _btn-gray']");
-            button2.removeAttribute("disabled");
-            button2.removeAllChildren();
-            button2.removeStyleAttribute("disabled");
+            HtmlElement button2 = page.getFirstByXPath("//button[@class='btn _btn-size-50 _btn-yellow']");
+            // button2.removeAttribute("disabled");
+            // button2.removeAllChildren();
+            // button2.removeStyleAttribute("disabled");
 
             button2.click();
             // 필수
@@ -50,7 +55,7 @@ public class TaikoHirobaLoginUtils {
 
             HtmlPage page2 = wc.getPage("https://donderhiroba.jp/login_select.php");
             System.out.println("----------------------동더 히로바 로그인 중 ... ------------------------");
-
+            System.out.println(page2.asNormalizedText());
             Thread.sleep(3500);
 
             try {

@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import javax.annotation.Resource;
+import javax.inject.Qualifier;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +38,7 @@ import org.apache.catalina.connector.Response;
 import org.apache.ibatis.session.SqlSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -56,14 +59,14 @@ import org.springframework.data.domain.Sort;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 public class TaikoBoardController {
-    private static String FilePath = "/Users/helloworld/vite_react_tutorial/src/assets";
+
+    // @Resource
+    // TaikoBoardService taikoBoardService;
+
     // 모종의 이유로 잠시 여기에다 하기로 함
     @Autowired
     private SqlSession sqlSession;
     protected static final String NAMESPACE = "com.taiko.taikoproject.taikoDao.";
-
-    @Autowired
-    TaikoBoardService taikoBoardService;
 
     @Autowired
     TaikoBoardListRepository taikoBoard;
@@ -77,42 +80,27 @@ public class TaikoBoardController {
     @Autowired
     TaikoCRUDRepository crud;
 
+    private static String FilePath = "/Users/helloworld/vite_react_tutorial/src/assets";
+
     Optional<TaikoBoardEntity> entity;
-
-    // @GetMapping("/test")
-    // public ResponseEntity<?> test() {
-    // JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
-    // QTaikoBoardEntity board = new QTaikoBoardEntity("board");
-
-    // List<TaikoBoardEntity> result = queryFactory
-    // .select(board)
-    // .from(board)
-    // .where(board.deletedTime.isNull())
-    // .orderBy(board.createdTime.asc())
-    // .offset(0)
-    // .limit(10)
-    // .fetch();
-
-    // return new ResponseEntity<>(result, HttpStatus.OK);
-    // }
 
     @GetMapping("/board")
     public ResponseEntity<?> getBoardList(HttpServletRequest req, final Pageable pageable) {
 
         // 기존 순수 JPA
-        // String pageNum = req.getParameter("pageNum");
-        // if (pageNum == "" || pageNum == null) {
-        // pageNum = "0";
-        // }
+        String pageNum = req.getParameter("pageNum");
+        if (pageNum == "" || pageNum == null) {
+            pageNum = "0";
+        }
 
-        // Pageable result = PageRequest.of(Integer.parseInt(pageNum), 5,
-        // Sort.by("createdTime").descending());
-        // return new ResponseEntity<>(taikoBoard.findBydeletedTimeNull(result),
-        // HttpStatus.OK);
+        Pageable result = PageRequest.of(Integer.parseInt(pageNum), 5,
+                Sort.by("createdTime").descending());
+        return new ResponseEntity<>(taikoBoard.findBydeletedTimeNull(result),
+                HttpStatus.OK);
 
         // queryDsl 로 마이그레이션 한 코드.
 
-        return new ResponseEntity<>("taikoBoardService.getBoardList()", HttpStatus.OK);
+        // return new ResponseEntity<>(taikoBoardService.getBoardList(), HttpStatus.OK);
 
     }
 

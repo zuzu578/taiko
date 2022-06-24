@@ -22,6 +22,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 // 빈등록했는데 autowire 시 의존성을 찾지못할경우
 // @ComponentScan(basePackages = {
 // "com.taiko.taikoproject.service.board.TaikoBoardService" })
+//@ComponentScan(basePackages = { "com.taiko.taikoproject.service.board.TaikoBoardService" })
 public class TaikoApplication {
 
 	public static void main(String[] args) {
